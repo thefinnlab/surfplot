@@ -222,7 +222,7 @@ class Plot(object):
     """
     def __init__(self, surf_lh=None, surf_rh=None, layout='grid', views=None, 
                  mirror_views=False, flip=False, size=(500, 400), zoom=1.5, 
-                 background=(1, 1, 1), label_text=None, brightness=.5):
+                 background=(1, 1, 1), label_text=None, brightness=.5, embed_nb=False, surf_alpha=1):
         hemi_inputs = zip(['left', 'right'], [surf_lh, surf_rh])
         self.surfaces = {k: _check_surf(v) 
                          for k, v in hemi_inputs if v is not None}
@@ -241,6 +241,7 @@ class Plot(object):
         self.zoom = zoom
         self.background = background
         self.label_text = label_text
+        self.embed_nb = embed_nb
 
         # these are updated with each overlay
         self.layers, self.cmaps, self.color_ranges = [], [], []
@@ -250,7 +251,7 @@ class Plot(object):
         backdrop = np.ones(sum([v.n_points for v in self.surfaces.values()]))
         brightness = 1e-6 if brightness == 0 else brightness
         backdrop *= brightness
-        self.add_layer(backdrop, 'Greys_r', color_range=(0, 1), cbar=False)
+        self.add_layer(backdrop, 'Greys_r', alpha=surf_alpha, color_range=(0, 1), cbar=False)
 
     def add_layer(self, data, cmap='viridis', alpha=1, color_range=None,
                   as_outline=False, zero_transparent=True, cbar=True, 
@@ -398,7 +399,7 @@ class Plot(object):
             cmap = [cmaps]
             color_range = [crange]
 
-        return plot_surf(surfs=self.surfaces, layout=hemi_layout,
+        return plot_surf(surfs=self.surfaces, layout=hemi_layout, embed_nb=self.embed_nb,
                          array_name=names, cmap=cmap, color_bar=False,
                          color_range=color_range, view=view_layout,
                          background=self.background, zoom=self.zoom,
@@ -515,6 +516,7 @@ class Plot(object):
         fig, ax = plt.subplots(figsize=figsize)
         ax.imshow(x)
         ax.axis('off')
+        
         if colorbar:
             cbar_kws = {} if cbar_kws is None else cbar_kws
             self._add_colorbars(**cbar_kws)

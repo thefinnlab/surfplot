@@ -243,6 +243,7 @@ def build_plotter(surfs, layout, array_name=None, view=None, color_bar=None,
     kwargs.update({'nrow': grid_row, 'ncol': grid_col, 'size': size})
     p = Plotter(**kwargs)
 
+    print ('Here')
     for iren, jren in iter_prod(range(len(ridx)), range(len(cidx))):
         i, j = ridx[iren], cidx[jren]
 
